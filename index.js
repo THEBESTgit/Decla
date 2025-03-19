@@ -13,3 +13,8 @@ noBtn.addEventListener('mouseover', function () {
     noBtn.style.setProperty('left',randomX+'%');
     noBtn.style.setProperty('transform',`translate(-${randomX}%,-${randomY}%)`);
 })
+document.body.addEventListener('click', function() {
+    const audio = new Audio('sound/feelit.mp3');
+    audio.loop = true;
+    audio.play().catch(() => alert("Haz clic en 'Aceptar' y luego en la página"));
+});
