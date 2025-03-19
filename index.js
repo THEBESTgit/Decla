@@ -1,46 +1,60 @@
-// Variables globales para control del audio
+// Variables globales
 let audio = new Audio('sound/feelit.mp3');
 let audioIniciado = false;
+let touchEvent = 'ontouchstart' in window ? 'touchstart' : 'click';
 
-// Configurar audio (una sola vez)
+// Configuración inicial
 audio.loop = true;
+audio.preload = 'auto';
 
-// Función para iniciar audio (controlada)
+// Función para iniciar audio
 function iniciarAudio() {
     if (!audioIniciado) {
         audio.play()
             .then(() => {
                 audioIniciado = true;
-                document.body.removeEventListener('click', iniciarAudio);
+                document.body.removeEventListener(touchEvent, iniciarAudio);
             })
-            .catch(() => {
-                alert("¡Haz clic en 'Aceptar' y luego en la página!");
+            .catch(error => {
+                alert("Toca la pantalla para activar la música 🎵");
             });
     }
 }
 
-// Evento único para el audio (en todo el cuerpo)
-document.body.addEventListener('click', iniciarAudio);
+// Evento único para móviles y desktop
+document.body.addEventListener(touchEvent, iniciarAudio, { passive: false });
 
-// Botón SI
+// Botón SI (mejorado para touch)
 const yesBtn = document.querySelector('#yesBtn');
 yesBtn.addEventListener('click', function() {
+    if (!audioIniciado) iniciarAudio();
     alert('Sabía que ibas a decir que sí ❤️');
 });
 
-// Botón NO
+// Botón NO (adaptado para touch)
 const noBtn = document.querySelector('#noBtn');
-noBtn.addEventListener('mouseover', function() {
-    const randomX = Math.random() * 100;
-    const randomY = Math.random() * 100;
+
+function moverBoton() {
+    const randomX = Math.random() * 80 + 10;  // Entre 10% y 90%
+    const randomY = Math.random() * 80 + 10;
     
     noBtn.style.top = `${randomY}%`;
     noBtn.style.left = `${randomX}%`;
     noBtn.style.transform = `translate(-${randomX}%, -${randomY}%)`;
-    
-    // Bonus: Efecto de vibración para más diversión
-    noBtn.style.transition = 'all 0.1s ease';
-    setTimeout(() => {
-        noBtn.style.transition = '';
-    }, 100);
+}
+
+// Eventos para móvil y desktop
+noBtn.addEventListener('touchstart', function(e) {
+    e.preventDefault();
+    moverBoton();
+});
+
+noBtn.addEventListener('mouseover', moverBoton);
+
+// Optimizar para móviles
+document.addEventListener('DOMContentLoaded', function() {
+    // Añadir clase táctil al body
+    if ('ontouchstart' in window) {
+        document.body.classList.add('touch-device');
+    }
 });
